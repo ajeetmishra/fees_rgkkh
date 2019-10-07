@@ -43,48 +43,45 @@ class fee_file:
         self.last_row = self.ws.col_values(0).index('STATEMENT SUMMARY  :-') - 5
         self.count_rows = self.last_row - 21
 
-
-
-
-    def get_data(self):
-        df = pd.read_excel(self.fname, skiprows=21, nrows=self.count_rows)
-        df.columns = ["TxnDate", "Narr", "Ref", "Dt_post", "Dr", "Cr", "Close",]
+        self.df = pd.read_excel(self.fname, skiprows=21, nrows=self.count_rows)
+        self.df.columns = ["TxnDate", "Narr", "Ref", "Dt_post", "Dr", "Cr", "Close",]
         
         #Remove debit entries
-        df = df[np.isnan(df.Dr)]
+        self.df = self.df[np.isnan(self.df.Dr)]
         
         #Drop columns not needed
-        df = df.drop(columns=['Dt_post', 'Dr', 'Close'])
+        self.df = self.df.drop(columns=['Dt_post', 'Dr', 'Close'])
 
         #Remove credit entries of Internal Transfer
-        df = df[df.Narr.str.contains('INTERNAL TRANSFER') == False]
+        self.df = self.df[self.df.Narr.str.contains('INTERNAL TRANSFER') == False]
 
         #Remove NEFT returns
-        df = df[df.Narr.str.contains('NEFT RETURN') == False]
+        self.df = self.df[self.df.Narr.str.contains('NEFT RETURN') == False]
 
         #Remove credit interest capitalized
-        df = df[df.Narr.str.contains('CREDIT INTEREST CAPITALISED') == False]
+        self.df = self.df[self.df.Narr.str.contains('CREDIT INTEREST CAPITALISED') == False]
 
         # Get payment mode
-        df['Mode'] = df.Narr.apply(self.get_paymode)
+        self.df['Mode'] = self.df.Narr.apply(self.get_paymode)
 
         # Convert string dates to actual dates
-        df.TxnDate = pd.to_datetime(df.TxnDate, format="%d/%m/%y")
+        self.df.TxnDate = pd.to_datetime(self.df.TxnDate, format="%d/%m/%y")
 
         # Create yymm
-        df['YYMM'] = str(pd.DatetimeIndex(df['TxnDate']).year) + "-" + str(pd.DatetimeIndex(df['TxnDate']).month)
-        df['YYMM'] = pd.to_datetime(df['TxnDate']).dt.to_period('M')
+        self.df['YYMM'] = str(pd.DatetimeIndex(self.df['TxnDate']).year) + "-" + str(pd.DatetimeIndex(self.df['TxnDate']).month)
+        self.df['YYMM'] = pd.to_datetime(self.df['TxnDate']).dt.to_period('M')
         
         # Capture account type as column
-        df['Acc Type'] = self.ac_type
+        self.df['Acc Type'] = self.ac_type
         
         #Guess student name
-        df['Student'] = df.Narr.apply(self.guess_student)
-        
-        #Sort by student name
-        df = df.sort_values('Student')
+        self.df['Student'] = self.df.Narr.apply(self.guess_student)
 
-        return df
+        #Sort by student name
+        self.df = self.df.sort_values('Student')
+
+        #Replace unidentified students name as UNIDENTIFIED
+        self.df.Student =  self.df.Student.fillna(value="Unidentified")
 
 
 
@@ -175,13 +172,7 @@ class fee_file:
             if val in text:
                 return key
         return None
-
-
-    def get_minmaxdate(self, df):
-        # Get max and min date from real data to validate data-importing quality
-        return str(min(df.TxnDate)), str(max(df.TxnDate))
-
-
+    
     def __str__(self):
 
         ret = '\n'.join([self.fname, self.ac_no, self.ac_type, self.date_from + ' - ' + self.date_to \
@@ -190,21 +181,58 @@ class fee_file:
         return ret + '\n\n'
 
 
+def dict_summary(df):
+    return {"Filename": df.fname, \
+        "AccNo": df.ac_no, \
+        "AccType": df.ac_type, \
+        "DateFrom": df.date_from,
+        "DateTo":df.date_to,
+        "Rows":df.count_rows}
+
+
+def summarize(df1, df2, df3):
+    # df is pandas data frame
+    summ1 = pd.DataFrame(dict_summary(df1), index=[1])
+    summ2 = pd.DataFrame(dict_summary(df2), index=[2])
+    summ3 = pd.DataFrame(dict_summary(df3), index=[3])
+
+    return pd.concat([summ1, summ2, summ3])
+ 
+
+
+
 if __name__ == '__main__':
-    f1 = fee_file("62302760_1569307498937.xls")
-    df1 = f1.get_data()
-    f2 = fee_file("62302760_1569307542076.xls")
-    df2 = f2.get_data()
-    f3 = fee_file("62302760_1569307578042.xls")
-    df3 = f3.get_data()
+    df1 = fee_file("62302760_1569307498937.xls")
+    df2 = fee_file("62302760_1569307542076.xls")
+    df3 = fee_file("62302760_1569307578042.xls")
 
-    print(f1, df1, f2, df2, f3, df3)
+    # print(df1, df2, df3)
+    df_summary = summarize(df1, df2, df3)
 
-    df_all = pd.concat([df1, df2, df3])
-
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    # Also set the default datetime and date formats.
-    df_all.to_excel("output.xlsx", engine='xlsxwriter', index=False)
+    df_all = pd.concat([df1.df, df2.df, df3.df])
 
     # Pivot the data
-    # print(pd.pivot_table(df1, index=["YYMM"], values=["Cr"]))
+    p1 = pd.pivot_table(df_all, index=["Acc Type", "Student"], \
+        columns=["YYMM"], values=["Cr"], aggfunc=[np.sum], fill_value=0)
+    
+    #Output to excel - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_excel.html
+    with pd.ExcelWriter('output.xlsx') as writer:  # doctest: +SKIP
+        df_summary.to_excel(writer, sheet_name='raw_data')
+        df_all.to_excel(writer, sheet_name='Data', index=False)
+        p1.to_excel(writer, sheet_name="Pivot")
+
+    import openpyxl
+    wb = openpyxl.load_workbook('output.xlsx')
+    ws = wb['Pivot']
+    ws.column_dimensions["A"].width=20
+    ws.column_dimensions["B"].width=25
+    from openpyxl.styles import Alignment, Font
+    for i in range(5, 200, 1):
+        thiscell = ws.cell(row=i, column=2)
+        thiscell.alignment = Alignment(horizontal='left')
+        if thiscell.value != 'Unidentified':
+            thiscell.font = Font(bold=False)
+    
+    wb.active = ws
+    wb.save(filename="output.xlsx")
+    
