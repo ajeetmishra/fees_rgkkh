@@ -28,7 +28,7 @@ class fee_file:
         elif self.ac_no == '50100103044190':
             self.ac_type = 'One time'
         else:
-            self.ac_type = 'Error'
+            self.ac_type = 'Unknown'
             self.proc_status.append("Err - A/c Type")
 
         #Get date range
@@ -42,6 +42,8 @@ class fee_file:
         #Get number of rows
         self.last_row = self.ws.col_values(0).index('STATEMENT SUMMARY  :-') - 5
         self.count_rows = self.last_row - 21
+
+
 
 
     def get_data(self):
@@ -65,6 +67,9 @@ class fee_file:
 
         # Get payment mode
         df['Mode'] = df.Narr.apply(self.get_paymode)
+
+        # Convert string dates to actual dates
+        df.TxnDate = pd.to_datetime(df.TxnDate, format="%d/%m/%y")
 
         # Create yymm
         df['YYMM'] = str(pd.DatetimeIndex(df['TxnDate']).year) + "-" + str(pd.DatetimeIndex(df['TxnDate']).month)
@@ -107,6 +112,8 @@ class fee_file:
         pattern_m['XX - Sumit/Vidula Naikode'] = 'SHAILESH DAGADU'
         pattern_m['XX - Kali/Shri Shukla'] = 'KALI SHRI'
         pattern_m['XX - Shreya/Rishi'] = 'SANDEEP MADHUKAR'
+        pattern_m['XX - Riya/Siya'] = 'BHUPENDRA'
+        pattern_m['XX - Vinayak/Shivraj'] = 'GAJANAN SHANKAR SHINDE'
 
         pattern_m['PP - Aarohi Mishra'] = 'AAROHI ISHI'
 
@@ -130,7 +137,8 @@ class fee_file:
         pattern_m['07 - Sarthak Sawant'] = 'SARTHAK'
 
         pattern_m['08 - Aditya Mahajan'] = 'ANIL N MAHAJAN'
-        pattern_m['08 - Arnav Sawant'] = 'AARYAAMITSAWANT'
+        pattern_m['08 - Arnav Sawant1'] = 'AARYAAMITSAWANT'
+        pattern_m['08 - Arnav Sawant2'] = 'RAVINDRA R SAWANT'
         pattern_m['08 - Diya Pamnani'] = 'PALLAVI HIRANAND'
         pattern_m['08 - Rishi Agarwal1'] = 'MINU AGARWAL'
         pattern_m['08 - Rishi Agarwal2'] = 'RITU AGARWAL'
@@ -143,14 +151,18 @@ class fee_file:
         
         pattern_m['10 - Arya Gawas'] = 'PRADIP GOVIND GAWAS'
         pattern_m['10 - Bhavya'] = 'BHAVYA PATEL'
+        pattern_m['10 - Parth Agarwal'] = 'GANESH MAHAVIR PRASAD AGARWAL'        
         pattern_m['10 - Rucha Shelar'] = 'SANJAY S SHELAR'
         pattern_m['10 - Shubh Shah1'] = 'NAYAN VASANT SHAH'
         pattern_m['10 - Shubh Shah2'] = 'SHUBH TRADING'
         pattern_m['10 - Rasika Desai'] = 'CHAITRA DESAI'
         pattern_m['10 - Riya Patil'] = 'SHAILESH S PATIL'
         pattern_m['10 - Sai Bagade'] = 'SANTOSH SHANTARAM'
+        pattern_m['10 - Sakshi Tekawade'] = 'OCEAN'
         pattern_m['10 - Samruddhi Pawar1'] = 'AMOL JANAR'
         pattern_m['10 - Samruddhi Pawar2'] = 'AMOL PAWAR'
+        pattern_m['10 - Siddhant Kamble'] = 'CHOPSTIX'
+        pattern_m['10 - Soham Gawali'] = 'SURYAKANT JAGANNATH'
         pattern_m['10 - Ved Ahire1'] = 'VED AHIRE'
         pattern_m['10 - Ved Ahire2'] = '28021000006912'
 
@@ -163,6 +175,11 @@ class fee_file:
             if val in text:
                 return key
         return None
+
+
+    def get_minmaxdate(self, df):
+        # Get max and min date from real data to validate data-importing quality
+        return str(min(df.TxnDate)), str(max(df.TxnDate))
 
 
     def __str__(self):
@@ -188,3 +205,6 @@ if __name__ == '__main__':
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     # Also set the default datetime and date formats.
     df_all.to_excel("output.xlsx", engine='xlsxwriter', index=False)
+
+    # Pivot the data
+    # print(pd.pivot_table(df1, index=["YYMM"], values=["Cr"]))
