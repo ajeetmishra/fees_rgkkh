@@ -1,4 +1,4 @@
 .Rhistory
 *.xls
 launch.json
-output.xlsx
+output*.xlsx
