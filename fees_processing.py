@@ -111,6 +111,7 @@ class fee_file:
         pattern_m['XX - Shreya/Rishi'] = 'SANDEEP MADHUKAR'
         pattern_m['XX - Riya/Siya'] = 'BHUPENDRA'
         pattern_m['XX - Vinayak/Shivraj'] = 'GAJANAN SHANKAR SHINDE'
+        pattern_m['XX - Kshitija/Mayuresh Dhole'] = 'CASH DEP JUINAGAR BRA'
 
         pattern_m['PP - Aarohi Mishra'] = 'AAROHI ISHI'
 
@@ -125,13 +126,21 @@ class fee_file:
         pattern_m['05 - Rohit Nayak'] = 'RASHMI V NAYAK'
         
         pattern_m['06 - Isha Bapat'] = 'ISHA BAPAT'
+        pattern_m['06 - Jeet Paswan'] = 'PASWAN'
         
-        pattern_m['07 - Yash Gajra'] = 'YASH GAJRA'
+        pattern_m['07 - Yash Gajra1'] = 'YASH GAJRA'
+        pattern_m['07 - Yash Gajra2'] = 'AVG ASSOCIATES'
         pattern_m['07 - Harsh Ambesange'] = 'RAKHEE SUDHANSHU AMBESANGE'
+        pattern_m['07 - Piyush Kale'] = 'SUREKHA  DNYANESHWAR KALE'
         pattern_m['07 - Jaivik Vyas'] = 'RENUKADARSHANVYAS'
         pattern_m['07 - Kaustubh Abnave'] = 'KAUSTUBH'
         pattern_m['07 - Saee Gujare'] = 'PRASHANT DATTU GUJAR'
-        pattern_m['07 - Sarthak Sawant'] = 'SARTHAK'
+        pattern_m['07 - Pari Mistry'] = '15741000010660'
+        pattern_m['07 - Sarthak Sawant1'] = 'SARTHAK'
+        pattern_m['07 - Sarthak Sawant2'] = '01851050034331'
+        pattern_m['07 - Shivaji Bhegde'] = 'SHREE DRONAGIREE AUSHADHALAY'
+        pattern_m['07 - Shivaji Bhegde2'] = 'JSBP0000005-005220100015923'
+        pattern_m['07 - Shlok Shewate'] = 'SHIVRAJ PACKAGING'
 
         pattern_m['08 - Aditya Mahajan'] = 'ANIL N MAHAJAN'
         pattern_m['08 - Arnav Sawant1'] = 'AARYAAMITSAWANT'
@@ -143,8 +152,10 @@ class fee_file:
         pattern_m['08 - Yuvaraj Mudaliyar2'] = 'VIJAY RAMSWAMY MUDAL'
         pattern_m['09 - Aditya Bhise'] = 'NITIN CHHAGAN BHISE'
         
-        pattern_m['09 - Moulya'] = 'MOULYA'
+        pattern_m['09 - Moulya1'] = 'MOULYA'
+        pattern_m['09 - Moulya2'] = 'RAVINDRA A V'
         pattern_m['09 - Krushna Borhade'] = 'BORHADE'
+        pattern_m['09 - Parth Kedia'] = 'GLOBAL ENGINEERING'
         
         pattern_m['10 - Arya Gawas'] = 'PRADIP GOVIND GAWAS'
         pattern_m['10 - Bhavya'] = 'BHAVYA PATEL'
@@ -153,7 +164,8 @@ class fee_file:
         pattern_m['10 - Shubh Shah1'] = 'NAYAN VASANT SHAH'
         pattern_m['10 - Shubh Shah2'] = 'SHUBH TRADING'
         pattern_m['10 - Rasika Desai'] = 'CHAITRA DESAI'
-        pattern_m['10 - Riya Patil'] = 'SHAILESH S PATIL'
+        pattern_m['10 - Riya Patil1'] = 'SHAILESH S PATIL'
+        pattern_m['10 - Riya Patil2'] = '00121250002434'
         pattern_m['10 - Sai Bagade'] = 'SANTOSH SHANTARAM'
         pattern_m['10 - Sakshi Tekawade'] = 'OCEAN'
         pattern_m['10 - Samruddhi Pawar1'] = 'AMOL JANAR'
@@ -167,6 +179,8 @@ class fee_file:
         pattern_m['Past - Hariharan'] = 'HARIHARAN'
         pattern_m['Past - Sanavi'] = 'VISHWRAJ SHIVRAJ'
         pattern_m['Past - Utsav'] = 'ARVIND KUMAR GUPTA'
+
+        pattern_m['Maid Service Sapariya'] = '01491140000718'
 
         for key, val in pattern_m.items():
             if val in text:
@@ -202,9 +216,14 @@ def summarize(df1, df2, df3):
 
 
 if __name__ == '__main__':
-    df1 = fee_file("62302760_1569307498937.xls")
-    df2 = fee_file("62302760_1569307542076.xls")
-    df3 = fee_file("62302760_1569307578042.xls")
+    
+    #Set output filename
+    output_fname = "output_23oct2019.xlsx"
+
+    #Set input files
+    df1 = fee_file("22Oct2019_1.xls")
+    df2 = fee_file("22Oct2019_2.xls")
+    df3 = fee_file("22Oct2019_3.xls") #One-time fee
 
     # print(df1, df2, df3)
     df_summary = summarize(df1, df2, df3)
@@ -216,13 +235,13 @@ if __name__ == '__main__':
         columns=["YYMM"], values=["Cr"], aggfunc=[np.sum], fill_value=0)
     
     #Output to excel - https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_excel.html
-    with pd.ExcelWriter('output.xlsx') as writer:  # doctest: +SKIP
-        df_summary.to_excel(writer, sheet_name='raw_data')
+    with pd.ExcelWriter(output_fname) as writer:  # doctest: +SKIP
+        df_summary.to_excel(writer, sheet_name='Input summary')
         df_all.to_excel(writer, sheet_name='Data', index=False)
         p1.to_excel(writer, sheet_name="Pivot")
 
     import openpyxl
-    wb = openpyxl.load_workbook('output.xlsx')
+    wb = openpyxl.load_workbook(output_fname)
     ws = wb['Pivot']
     ws.column_dimensions["A"].width=20
     ws.column_dimensions["B"].width=25
@@ -234,5 +253,5 @@ if __name__ == '__main__':
             thiscell.font = Font(bold=False)
     
     wb.active = ws
-    wb.save(filename="output.xlsx")
+    wb.save(filename=output_fname)
     
