@@ -2,7 +2,7 @@ import os, xlrd, re
 import numpy as np
 import pandas as pd
 
-os.chdir('/home/qf/Documents/QfProjects/fees_rgkkh/')
+#os.chdir('c:/users/abamb2o/downloads/rgkkh/')
 
 class fee_file:
     
@@ -107,21 +107,30 @@ class fee_file:
     def guess_student(self, text):
         pattern_m = {}
         pattern_m['XX - Sumit/Vidula Naikode'] = 'SHAILESH DAGADU'
-        pattern_m['XX - Kali/Shri Shukla'] = 'KALI SHRI'
+        pattern_m['XX - Kali/Shri Shukla1'] = 'KALI SHRI'
+        pattern_m['XX - Kali/Shri Shukla2'] = '15781130003652'
+        pattern_m['XX - Kali/Shri Shukla3'] = 'VISHAL KIRIT'
         pattern_m['XX - Shreya/Rishi'] = 'SANDEEP MADHUKAR'
         pattern_m['XX - Riya/Siya'] = 'BHUPENDRA'
-        pattern_m['XX - Vinayak/Shivraj'] = 'GAJANAN SHANKAR SHINDE'
-        pattern_m['XX - Kshitija/Mayuresh Dhole'] = 'CASH DEP JUINAGAR BRA'
+        pattern_m['XX - Vinayak/Shivraj1'] = 'GAJANAN SHANKAR'
+        pattern_m['XX - Kshitija/Mayuresh Dhole1'] = 'CASH DEP JUINAGAR BRA'
+        pattern_m['XX - Kshitija/Mayuresh Dhole2'] = 'KSHITIJABEAUTYCARE1@OKSBI'
+        pattern_m['XX - Krishit/Nishi Pokar'] = 'RAJESH NARAN POKAR'
 
+        pattern_m['XX - Donation1'] = 'DONATION'
+        pattern_m['XX - Donation2'] = 'SAMREDHI SAREEN'
+        pattern_m['XX - Donation3'] = 'KETAN SAHADEO'
+        pattern_m['XX - Donation4'] = 'R R SARDA'
         pattern_m['PP - Aarohi Mishra'] = 'AAROHI ISHI'
-
         pattern_m['03 - Dev Madkaikar'] = 'MAST DEV'
         pattern_m['03 - Tashvi Vartak'] = 'TASHVI'
-        
+                
         pattern_m['04 - Joy Tanna'] = 'JOY'
         pattern_m['04 - Agrima Mishra1'] = 'AGRIMA'
         pattern_m['04 - Agrima Mishra2'] = 'MAHADEV'
         
+        pattern_m['05 - Auro Arpan1'] = 'RAKESH KUMAR SAHOO'
+        pattern_m['05 - Auro Arpan2'] = 'AURO ARPAN'
         pattern_m['05 - Gaurav Chopra'] = 'RAHUL VINOD CHOPRA'
         pattern_m['05 - Rohit Nayak'] = 'RASHMI V NAYAK'
         
@@ -135,11 +144,13 @@ class fee_file:
         pattern_m['07 - Jaivik Vyas'] = 'RENUKADARSHANVYAS'
         pattern_m['07 - Kaustubh Abnave'] = 'KAUSTUBH'
         pattern_m['07 - Saee Gujare'] = 'PRASHANT DATTU GUJAR'
-        pattern_m['07 - Pari Mistry'] = '15741000010660'
+        pattern_m['07 - Pari Mestry1'] = '15741000010660'
+        pattern_m['07 - Pari Mestry2'] = 'AMOL N MESTRY'
         pattern_m['07 - Sarthak Sawant1'] = 'SARTHAK'
         pattern_m['07 - Sarthak Sawant2'] = '01851050034331'
-        pattern_m['07 - Shivaji Bhegde'] = 'SHREE DRONAGIREE AUSHADHALAY'
-        pattern_m['07 - Shivaji Bhegde2'] = 'JSBP0000005-005220100015923'
+        pattern_m['07 - Shivaji Bhegade1'] = 'SHREE DRONAGIREE AUSHADHALAY'
+        pattern_m['07 - Shivaji Bhegade2'] = 'JSBP0000005-005220100015923'
+        pattern_m['07 - Shivaji Bhegade3'] = 'BHEGADE'
         pattern_m['07 - Shlok Shewate'] = 'SHIVRAJ PACKAGING'
 
         pattern_m['08 - Aditya Mahajan'] = 'ANIL N MAHAJAN'
@@ -148,6 +159,7 @@ class fee_file:
         pattern_m['08 - Diya Pamnani'] = 'PALLAVI HIRANAND'
         pattern_m['08 - Rishi Agarwal1'] = 'MINU AGARWAL'
         pattern_m['08 - Rishi Agarwal2'] = 'RITU AGARWAL'
+        pattern_m['08 - Yash Kshirsagar'] = 'VITTHAL BALASAHEB'
         pattern_m['08 - Yuvaraj Mudaliyar1'] = 'VIJAY RAMSWAMY MUDALIYAR'
         pattern_m['08 - Yuvaraj Mudaliyar2'] = 'VIJAY RAMSWAMY MUDAL'
         pattern_m['09 - Aditya Bhise'] = 'NITIN CHHAGAN BHISE'
@@ -174,13 +186,24 @@ class fee_file:
         pattern_m['10 - Soham Gawali'] = 'SURYAKANT JAGANNATH'
         pattern_m['10 - Ved Ahire1'] = 'VED AHIRE'
         pattern_m['10 - Ved Ahire2'] = '28021000006912'
+        pattern_m['10 - Ved Ahire3'] = 'ASHWINIAHIRE'
 
         pattern_m['Past - Kukreja'] = 'KUKREJA'
         pattern_m['Past - Hariharan'] = 'HARIHARAN'
         pattern_m['Past - Sanavi'] = 'VISHWRAJ SHIVRAJ'
         pattern_m['Past - Utsav'] = 'ARVIND KUMAR GUPTA'
+        pattern_m['Past - Soham Pokharkar'] = 'POKHARKAR'
 
         pattern_m['Maid Service Sapariya'] = '01491140000718'
+
+
+
+# Laundry/maid/electricity expense
+# DRVARSHAM@OKHDFCBANK
+# ROHITTANNA@OKHDFCBANK
+# RAJAN88@UPI
+
+
 
         for key, val in pattern_m.items():
             if val in text:
@@ -218,17 +241,20 @@ def summarize(df1, df2, df3):
 if __name__ == '__main__':
     
     #Set output filename
-    output_fname = "output_23oct2019.xlsx"
+    output_fname = "output_20mar2020.xlsx"
 
     #Set input files
-    df1 = fee_file("22Oct2019_1.xls")
-    df2 = fee_file("22Oct2019_2.xls")
-    df3 = fee_file("22Oct2019_3.xls") #One-time fee
+    df1 = fee_file("15mar2020_1.xls")
+    df2 = fee_file("15mar2020_4.xls")
+    df3 = fee_file("15mar2020_3.xls")
 
     # print(df1, df2, df3)
     df_summary = summarize(df1, df2, df3)
 
     df_all = pd.concat([df1.df, df2.df, df3.df])
+
+    # If student name has a digit as suffix, remove that suffix
+    df_all.Student = df_all.Student.replace(to_replace=r'(.*)\d$', value=r'\1', regex=True)
 
     # Pivot the data
     p1 = pd.pivot_table(df_all, index=["Acc Type", "Student"], \
