@@ -131,6 +131,7 @@ class fee_file:
         
         pattern_m['05 - Auro Arpan1'] = 'RAKESH KUMAR SAHOO'
         pattern_m['05 - Auro Arpan2'] = 'AURO ARPAN'
+        pattern_m['05 - Auro Arpan3'] = '01331020001095'
         pattern_m['05 - Gaurav Chopra'] = 'RAHUL VINOD CHOPRA'
         pattern_m['05 - Rohit Nayak'] = 'RASHMI V NAYAK'
         
@@ -175,7 +176,8 @@ class fee_file:
         pattern_m['10 - Rucha Shelar'] = 'SANJAY S SHELAR'
         pattern_m['10 - Shubh Shah1'] = 'NAYAN VASANT SHAH'
         pattern_m['10 - Shubh Shah2'] = 'SHUBH TRADING'
-        pattern_m['10 - Rasika Desai'] = 'CHAITRA DESAI'
+        pattern_m['10 - Rasika Desai1'] = 'CHAITRA DESAI'
+        pattern_m['10 - Rasika Desai2'] = '02271140016593'
         pattern_m['10 - Riya Patil1'] = 'SHAILESH S PATIL'
         pattern_m['10 - Riya Patil2'] = '00121250002434'
         pattern_m['10 - Sai Bagade'] = 'SANTOSH SHANTARAM'
